@@ -1,16 +1,14 @@
 local scene = {}
 
 function scene:load()
-  gridSegmentSize = 70
-  
   gameScore = 0
   
-  spawnPegs()
+  spawnPegs(6, 16)
   spawnDisc()
   spawnBoxes()
 end
 
-function scene:update(deltaTime)
+function scene:update()
   handleDiscMovement()
 end
 

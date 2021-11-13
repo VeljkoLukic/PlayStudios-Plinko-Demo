@@ -5,11 +5,14 @@ function love.load()
   require("score")
   require("mathHelper")
 
-  SCREEN_WIDTH = 1000
+  SCREEN_WIDTH = 1280
   SCREEN_HEIGHT = 720
 
+  quadTreeSegmentSize = 320
+
   mainMenuScene = require("mainMenuScene")
-  gameplayScene = require("gameplayScene")
+  level1Scene = require("level1Scene")
+  level2Scene = require("level2Scene")
 
   love.window.setMode(SCREEN_WIDTH, SCREEN_HEIGHT)
   

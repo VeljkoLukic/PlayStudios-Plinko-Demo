@@ -1,16 +1,16 @@
 local pegRadius = 10
 local pegTable = {}
-pegGrid = {}
+pegQuadTree = {}
 
 PEG_GRID_KEY_DELIMITER = "|"
 
-function spawnPegs()
+function spawnPegs(rows, columns)
   local spacing = 70
-  local spawnX = spacing - 10
+  local spawnX = (SCREEN_WIDTH - ((spacing + pegRadius / 4) * columns)) / 2
 	local spawnY = SCREEN_HEIGHT / 6
   
-  for rows = 0, 6, 1 do
-    for columns = 0, 12, 1 do
+  for rows = 0, rows, 1 do
+    for columns = 0, columns, 1 do
       local newPeg = {}
       newPeg.x = spawnX + (spacing * columns)
       newPeg.y = spawnY + (spacing * rows)
@@ -21,15 +21,15 @@ function spawnPegs()
       
       table.insert(pegTable, newPeg)
       
-      --add peg to its dedicated grid segment to be pulled as needed
-      local pegRow = math.floor(newPeg.y / gridSegmentSize)
-      local pegColumn = math.floor(newPeg.x / gridSegmentSize)
+      --add peg to its dedicated quad-tree-like segment to be pulled as needed
+      local pegRow = math.floor(newPeg.y / quadTreeSegmentSize)
+      local pegColumn = math.floor(newPeg.x / quadTreeSegmentSize)
       
-      if (not pegGrid[pegRow .. PEG_GRID_KEY_DELIMITER .. pegColumn]) then
-        pegGrid[pegRow .. PEG_GRID_KEY_DELIMITER .. pegColumn] = {}
+      if (not pegQuadTree[pegRow .. PEG_GRID_KEY_DELIMITER .. pegColumn]) then
+        pegQuadTree[pegRow .. PEG_GRID_KEY_DELIMITER .. pegColumn] = {}
       end
   
-      table.insert (pegGrid[pegRow .. PEG_GRID_KEY_DELIMITER .. pegColumn], newPeg)
+      table.insert (pegQuadTree[pegRow .. PEG_GRID_KEY_DELIMITER .. pegColumn], newPeg)
     end
   end  
 end

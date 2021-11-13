@@ -4,10 +4,12 @@ boxHeight = 70
 boxTable = {}
 
 function spawnBoxes()
+  spacing = (SCREEN_WIDTH / boxWidth + 60)
+
   for i = 0, 2, 1 do    
     local newBox = {}
     newBox.points = math.floor(math.random() * 20) * 50
-    newBox.x = 40 + i * (SCREEN_WIDTH / 3)
+    newBox.x = (spacing * 3) + i * (spacing + boxWidth)
     newBox.y = SCREEN_HEIGHT - boxHeight
     table.insert(boxTable, newBox)
   end

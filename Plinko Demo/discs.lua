@@ -1,7 +1,7 @@
 local discRadius = 10
 
-local airResistance = 0.9811
-local gravityFactor = 0.5121
+local airResistance = 58.25
+local gravityFactor = 51
 
 local discTable = {}
 
@@ -11,7 +11,7 @@ function spawnDisc()
   newDisc.x = love.mouse.getX ()
   newDisc.y = 45
   
-  newDisc.xVelocity = (math.random (-5, 5))
+  newDisc.xVelocity = 0
   newDisc.yVelocity = 0
   newDisc.ready = false
   newDisc.enabled = true
@@ -41,10 +41,10 @@ function handleDiscMovement()
         end
         return
       end
-      
-      disc.xVelocity = disc.xVelocity * airResistance
-      disc.yVelocity = disc.yVelocity * airResistance
-      disc.yVelocity = disc.yVelocity + gravityFactor
+
+      disc.xVelocity = disc.xVelocity * airResistance * love.timer.getDelta()
+      disc.yVelocity = disc.yVelocity * airResistance * love.timer.getDelta()
+      disc.yVelocity = disc.yVelocity + gravityFactor * love.timer.getDelta()
       
       local newDiscPosition = {}
       newDiscPosition.x = disc.x + disc.xVelocity
@@ -58,21 +58,27 @@ function handleDiscMovement()
         disc.xVelocity = disc.xVelocity * -1
       end
       
-      if (not collidedWithPeg) then
+      if (collidedWithPeg == nil) then
         disc.y = disc.y + disc.yVelocity
         disc.x = disc.x + disc.xVelocity
-      else
-        disc.xVelocity = disc.xVelocity * -1
+      else        
         disc.yVelocity = disc.yVelocity * -1
 
-        --adding a bit of randomness depending on disc x direction
-        if (math.abs(disc.xVelocity) < 2.2) then
-          if (disc.xVelocity > 0) then
-            disc.xVelocity = disc.xVelocity + (math.random() + 3)
-          else
-            disc.xVelocity = disc.xVelocity - (math.random() + 3)
-          end	
-        end
+  		if (disc.x < collidedWithPeg.x) then
+          	if (disc.xVelocity >= 0) then
+          		disc.xVelocity = disc.xVelocity * -1
+          		if (math.abs(disc.xVelocity) < 2.5) then
+          			disc.xVelocity = disc.xVelocity - (math.random() + math.random(2.95, 3.05))
+          		end
+        	end
+        else
+        	if (disc.xVelocity <= 0) then
+        		disc.xVelocity = disc.xVelocity * -1
+        		if (math.abs(disc.xVelocity) < 2.5) then
+        			disc.xVelocity = disc.xVelocity + (math.random() + math.random(2.95, 3.05))
+        		end
+        	end
+  		end
       end
     end
   end
@@ -80,21 +86,21 @@ end
 
 function onPegCollision(disc)
   --load the nearest pegs
-  local pegRow = math.floor(disc.y / gridSegmentSize)
-  local pegColumn = math.floor(disc.x / gridSegmentSize)
-  local nearbyPegs = pegGrid[pegRow .. PEG_GRID_KEY_DELIMITER .. pegColumn]
+  local pegRow = math.floor(disc.y / quadTreeSegmentSize)
+  local pegColumn = math.floor(disc.x / quadTreeSegmentSize)
+  local nearbyPegs = pegQuadTree[pegRow .. PEG_GRID_KEY_DELIMITER .. pegColumn]
 
   if (not nearbyPegs) then
-    return
+  	return
   end
   
   for i, peg in pairs(nearbyPegs) do
     local distance = getDistance(disc, peg)
-    if (distance <= discRadius * 2) then      
-      return true
+    if (distance <= discRadius * 1.8) then      
+      return peg
     end
   end 
-  return false
+  return nil
 end
 
 function onBoxCollision(disc)
